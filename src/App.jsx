@@ -4,6 +4,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Container, AppBar, Toolbar, Typography, Button } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AddIcon from '@mui/icons-material/Add';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { theme } from './theme/theme';
 import UserIdentification from './components/UserIdentification';
 import ExpenseForm from './components/ExpenseForm';
@@ -31,6 +33,7 @@ function App() {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <ToastContainer />
         <UserIdentification onUserIdentified={handleUserIdentified} />
       </ThemeProvider>
     );
@@ -39,6 +42,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <ToastContainer />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <AppBar position="static" sx={{ background: 'linear-gradient(135deg, #6B9BD1 0%, #4A6FA5 100%)' }}>
           <Toolbar>

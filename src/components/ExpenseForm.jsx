@@ -11,6 +11,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { uploadExpenseImage, sendToN8nWebhook } from '../services/expenseService';
+import { showSuccessToast, showErrorToast } from '../services/toastService';
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -78,11 +79,14 @@ const ExpenseForm = ({ open, onClose, userId, firstName, lastName, onExpenseAdde
       setImageFile(null);
       setImagePreview('');
 
+      showSuccessToast('Expense submitted successfully!');
       onExpenseAdded();
       onClose();
     } catch (err) {
-      setError(err.message || 'Failed to process image');
-      console.error('Image processing error:', err);
+      const errorMessage = err.message || 'Failed to process expense';
+      setError(errorMessage);
+      showErrorToast(errorMessage);
+      console.error('Expense processing error:', err);
     } finally {
       setLoading(false);
     }

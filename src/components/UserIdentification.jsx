@@ -9,6 +9,7 @@ import {
   Alert,
 } from '@mui/material';
 import { getOrCreateUser } from '../services/expenseService';
+import { showSuccessToast, showErrorToast } from '../services/toastService';
 
 const UserIdentification = ({ onUserIdentified }) => {
   const [firstName, setFirstName] = useState('');
@@ -30,7 +31,7 @@ const UserIdentification = ({ onUserIdentified }) => {
       }
 
       // Verify user exists in database
-      const user = await getOrCreateUser(firstName, lastName, userId);
+      await getOrCreateUser(firstName, lastName, userId);
 
       // Call the callback with user data
       onUserIdentified({
@@ -38,8 +39,12 @@ const UserIdentification = ({ onUserIdentified }) => {
         lastName,
         userId,
       });
+
+      showSuccessToast(`Welcome, ${firstName}!`);
     } catch (err) {
-      setError(err.message || 'An error occurred during identification');
+      const errorMessage = err.message || 'An error occurred during identification';
+      setError(errorMessage);
+      showErrorToast(errorMessage);
       console.error('Identification error:', err);
     } finally {
       setLoading(false);
