@@ -29,8 +29,8 @@ const UserIdentification = ({ onUserIdentified }) => {
         return;
       }
 
-      // Get or create user
-      await getOrCreateUser(firstName, lastName, userId);
+      // Verify user exists in database
+      const user = await getOrCreateUser(firstName, lastName, userId);
 
       // Call the callback with user data
       onUserIdentified({
@@ -109,12 +109,12 @@ const UserIdentification = ({ onUserIdentified }) => {
               placeholder="Enter your last name"
             />
             <TextField
-              label="ID"
+              label="User ID"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               fullWidth
               disabled={loading}
-              placeholder="Enter your unique ID"
+              placeholder="Enter your user ID"
             />
             <Button
               type="submit"

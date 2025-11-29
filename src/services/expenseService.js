@@ -61,42 +61,30 @@ export const uploadExpenseImage = async (userId, file) => {
 };
 
 /**
- * Get or create user
+ * Verify user exists in database
+ * Users must be pre-created in the database
  */
 export const getOrCreateUser = async (firstName, lastName, userId) => {
   try {
-    // Check if user exists
-    const { data: existingUser, error: fetchError } = await supabase
+    // Verify user exists with matching firstname, lastname, and user_id
+    const { data: user, error: fetchError } = await supabase
       .from('users')
       .select('*')
+      .eq('firstname', firstName)
+      .eq('lastname', lastName)
       .eq('user_id', userId)
       .single();
 
-    if (fetchError && fetchError.code !== 'PGRST116') {
+    if (fetchError) {
+      if (fetchError.code === 'PGRST116') {
+        throw new Error('User not found. Please check your credentials and try again.');
+      }
       throw fetchError;
     }
 
-    if (existingUser) {
-      return existingUser;
-    }
-
-    // Create new user
-    const { data: newUser, error: insertError } = await supabase
-      .from('users')
-      .insert([
-        {
-          firstName,
-          lastName,
-          user_id: userId,
-        },
-      ])
-      .select()
-      .single();
-
-    if (insertError) throw insertError;
-    return newUser;
+    return user;
   } catch (error) {
-    console.error('Error getting or creating user:', error);
+    console.error('Error verifying user:', error);
     throw error;
   }
 };
