@@ -104,7 +104,7 @@ const ExpenseForm = ({ open, onClose, userId, firstName, lastName, onExpenseAdde
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
-            label="Comment *"
+            label="Comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             fullWidth
