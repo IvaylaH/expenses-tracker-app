@@ -71,6 +71,8 @@ function App() {
           open={formOpen}
           onClose={() => setFormOpen(false)}
           userId={user.userId}
+          firstName={user.firstName}
+          lastName={user.lastName}
           onExpenseAdded={handleExpenseAdded}
         />
       </Box>

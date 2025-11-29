@@ -1,6 +1,30 @@
 import { supabase } from '../lib/supabaseClient';
 
 /**
+ * Generate a unique receipt filename
+ * Returns a filename like "Receipt_1234567890_ABCD.ext"
+ */
+const generateUniqueReceiptName = (originalFileName) => {
+  // Extract file extension
+  const fileExtension = originalFileName.split('.').pop();
+
+  // Generate timestamp-based unique ID
+  const timestamp = Date.now();
+
+  // Generate random alphanumeric suffix for extra uniqueness
+  const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+
+  return `Receipt_${timestamp}_${randomSuffix}.${fileExtension}`;
+};
+
+/**
+ * Check if filename contains non-ASCII characters
+ */
+const hasNonAsciiCharacters = (fileName) => {
+  return /[^\x00-\x7F]/.test(fileName);
+};
+
+/**
  * Fetch all expenses for a specific user
  */
 export const fetchUserExpenses = async (userId) => {
@@ -42,7 +66,19 @@ export const createExpense = async (expenseData) => {
  */
 export const uploadExpenseImage = async (userId, file) => {
   try {
-    const fileName = `${userId}/${Date.now()}_${file.name}`;
+    // Check if filename contains non-ASCII characters
+    let sanitizedFileName;
+    if (hasNonAsciiCharacters(file.name)) {
+      // Generate a unique receipt name for files with non-ASCII characters
+      sanitizedFileName = generateUniqueReceiptName(file.name);
+    } else {
+      // For ASCII-only filenames, just remove special characters
+      sanitizedFileName = file.name
+        .replace(/[^a-zA-Z0-9._-]/g, '_')
+        .replace(/_{2,}/g, '_'); // Replace multiple underscores with single underscore
+    }
+
+    const fileName = `${userId}/${Date.now()}_${sanitizedFileName}`;
     const { error: uploadError } = await supabase.storage
       .from('expense-images')
       .upload(fileName, file);
@@ -85,6 +121,38 @@ export const getOrCreateUser = async (firstName, lastName, userId) => {
     return user;
   } catch (error) {
     console.error('Error verifying user:', error);
+    throw error;
+  }
+};
+
+/**
+ * Send data to n8n webhook
+ */
+export const sendToN8nWebhook = async (userData, imageFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('firstName', userData.firstName);
+    formData.append('lastName', userData.lastName);
+    formData.append('userId', userData.userId);
+    formData.append('imageUrl', userData.imageUrl);
+    formData.append('comment', userData.comment);
+    formData.append('image', imageFile);
+
+    const response = await fetch(
+      'https://ai.n8n-myacad.org/webhook-test/80d11f1b-d69f-401a-9c52-36d02cb05e40',
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Webhook request failed with status ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error sending to n8n webhook:', error);
     throw error;
   }
 };
