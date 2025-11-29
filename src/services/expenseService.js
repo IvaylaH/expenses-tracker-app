@@ -139,7 +139,7 @@ export const sendToN8nWebhook = async (userData, imageFile) => {
     formData.append('image', imageFile);
 
     const response = await fetch(
-      'https://ai.n8n-myacad.org/webhook-test/80d11f1b-d69f-401a-9c52-36d02cb05e40',
+      'https://ai.n8n-myacad.org/webhook/80d11f1b-d69f-401a-9c52-36d02cb05e40',
       {
         method: 'POST',
         body: formData,
