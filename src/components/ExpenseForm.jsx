@@ -22,7 +22,6 @@ const ExpenseForm = ({ open, onClose, userId, onExpenseAdded }) => {
   const [currency, setCurrency] = useState('USD');
   const [category, setCategory] = useState('');
   const [status, setStatus] = useState('');
-  const [comment, setComment] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [loading, setLoading] = useState(false);
@@ -89,7 +88,6 @@ const ExpenseForm = ({ open, onClose, userId, onExpenseAdded }) => {
       setCurrency('USD');
       setCategory('');
       setStatus('');
-      setComment('');
       setImageFile(null);
       setImagePreview('');
 
@@ -169,17 +167,6 @@ const ExpenseForm = ({ open, onClose, userId, onExpenseAdded }) => {
             fullWidth
             disabled={loading}
             placeholder="e.g., Pending, Completed"
-          />
-
-          <TextField
-            label="Comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            fullWidth
-            multiline
-            rows={3}
-            disabled={loading}
-            placeholder="Add any additional notes about this expense"
           />
 
           <Box>
