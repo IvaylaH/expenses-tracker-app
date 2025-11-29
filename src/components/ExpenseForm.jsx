@@ -51,14 +51,18 @@ const ExpenseForm = ({ open, onClose, userId, firstName, lastName, onExpenseAdde
     setLoading(true);
 
     try {
-      if (!imageFile) {
-        setError('Image is required');
+      if (!comment.trim()) {
+        setError('Comment is required');
         setLoading(false);
         return;
       }
 
-      // Upload image to Supabase bucket
-      const imageUrl = await uploadExpenseImage(userId, imageFile);
+      let imageUrl = null;
+
+      // Upload image to Supabase bucket if provided
+      if (imageFile) {
+        imageUrl = await uploadExpenseImage(userId, imageFile);
+      }
 
       // Send data to n8n webhook
       await sendToN8nWebhook({
@@ -96,7 +100,7 @@ const ExpenseForm = ({ open, onClose, userId, firstName, lastName, onExpenseAdde
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
-            label="Comment"
+            label="Comment *"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             fullWidth
@@ -104,6 +108,7 @@ const ExpenseForm = ({ open, onClose, userId, firstName, lastName, onExpenseAdde
             multiline
             rows={3}
             placeholder="Add any notes about this expense..."
+            required
           />
 
           <Box>
@@ -113,7 +118,7 @@ const ExpenseForm = ({ open, onClose, userId, firstName, lastName, onExpenseAdde
               fullWidth
               disabled={loading}
             >
-              Upload Image (JPG, PNG, WEBP, GIF)
+              Upload Image - Optional (JPG, PNG, WEBP, GIF)
               <input
                 type="file"
                 hidden
